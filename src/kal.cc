@@ -31,7 +31,7 @@
  *    Two functions:
  *
  * 	1.  Calculates the frequency offset between a local GSM tower and the
- * 	    USRP clock.
+ * 	    LimeSDR clock.
  *
  *	2.  Identifies the frequency of all GSM base stations in a given band.
  */
@@ -52,7 +52,7 @@
 #include <sys/time.h>
 #include <errno.h>
 
-#include "usrp_source.h"
+#include "lime_source.h"
 #include "fcch_detector.h"
 #include "arfcn_freq.h"
 #include "offset.h"
@@ -80,10 +80,9 @@ void usage(char *prog) {
 	printf("\t-f\tfrequency of nearby GSM base station\n");
 	printf("\t-c\tchannel of nearby GSM base station\n");
 	printf("\t-b\tband indicator (GSM850, GSM900, EGSM, DCS, PCS)\n");
-	printf("\t-R\tRX subdev spec\n");
-	printf("\t-A\tantenna TX/RX (0) or RX2 (1), defaults to RX2\n");
-	printf("\t-g\tgain as %% of range, defaults to 45%%\n");
-	printf("\t-F\tFPGA master clock frequency, defaults to device default\n");
+	printf("\t-R\tRX subdev spec (Not Supported)\n");
+	printf("\t-A\tantenna LNAH or LNAL or LNAW, defaults to LNAH\n");
+	printf("\t-g\tgain, defaults to 36.5\n");
 	printf("\t-x\tenable external 10MHz reference input\n");
 	printf("\t-v\tverbose\n");
 	printf("\t-D\tenable debug messages\n");
@@ -95,13 +94,14 @@ void usage(char *prog) {
 int main(int argc, char **argv) {
 
 	char *endptr;
-	int c, antenna = 1, bi = BI_NOT_DEFINED, chan = -1, bts_scan = 0;
+	int c, bi = BI_NOT_DEFINED, chan = -1, bts_scan = 0;
+	char *antenna_args = NULL;
 	char *subdev = NULL;
-	double fpga_master_clock_freq = 52e6;
+	double fpga_master_clock_freq = 30.72e6;
 	bool external_ref = false;
-	float gain = 0.45;
+	float gain = 36.5;
 	double freq = -1.0, fd;
-	usrp_source *u;
+	lime_source *u;
 
 	while((c = getopt(argc, argv, "f:c:s:b:R:A:g:F:xvDh?")) != EOF) {
 		switch(c) {
@@ -136,27 +136,19 @@ int main(int argc, char **argv) {
 				break;
 
 			case 'A':
-				if(!strcmp(optarg, "RX2")) {
-					antenna = 1;
-				} else if(!strcmp(optarg, "TX/RX")) {
-					antenna = 0;
+				if (!strcmp(optarg, "LNAH") || !strcmp(optarg, "LNAW") || !strcmp(optarg, "LNAL")) {
+					antenna_args = optarg;
 				} else {
-					errno = 0;
-					antenna = strtoul(optarg, &endptr, 0);
-					if(errno || (endptr == optarg)) {
-						fprintf(stderr, "error: bad "
+					fprintf(stderr, "error: bad "
 						   "antenna: ``%s''\n",
 						   optarg);
 						usage(argv[0]);
-					}
 				}
 				break;
 
 			case 'g':
 				gain = strtod(optarg, 0);
-				if((gain > 1.0) && (gain <= 100.0))
-					gain /= 100.0;
-				if((gain < 0.0) || (1.0 < gain))
+				if((gain < 0.0) || (73.0 < gain))
 					usage(argv[0]);
 				break;
 
@@ -182,7 +174,6 @@ int main(int argc, char **argv) {
 				usage(argv[0]);
 				break;
 		}
-
 	}
 
 	// sanity check frequency / channel
@@ -215,29 +206,31 @@ int main(int argc, char **argv) {
 		printf("debug: FPGA Master Clock Freq:\t%f\n", fpga_master_clock_freq);
 		printf("debug: External Reference    :\t%s\n", external_ref? "Yes" : "No");
 		printf("debug: RX Subdev Spec        :\t%s\n", subdev? subdev : "");
-		printf("debug: Antenna               :\t%s\n", antenna? "RX2" : "TX/RX");
+		printf("debug: Antenna               :\t%s\n", antenna_args? antenna_args : "LNAH");
 		printf("debug: Gain                  :\t%f\n", gain);
 	}
 
 	// let the device decide on the decimation
-	u = new usrp_source(GSM_RATE, fpga_master_clock_freq, external_ref);
+	u = new lime_source(GSM_RATE, fpga_master_clock_freq, external_ref);
 	if(!u) {
-		fprintf(stderr, "error: usrp_source\n");
+		fprintf(stderr, "error: radio_source\n");
 		return -1;
 	}
 	if(u->open(subdev) == -1) {
-		fprintf(stderr, "error: usrp_source::open\n");
+		fprintf(stderr, "error: radio_source::open\n");
 		return -1;
 	}
-	u->set_antenna(antenna);
+	if (antenna_args) {
+		u->set_antenna(antenna_args);
+	}
 	if(!u->set_gain(gain)) {
-		fprintf(stderr, "error: usrp_source::set_gain\n");
+		fprintf(stderr, "error: radio_source::set_gain\n");
 		return -1;
 	}
 
 	if(!bts_scan) {
-		if(!u->tune(freq)) {
-			fprintf(stderr, "error: usrp_source::tune\n");
+		if(u->tune(freq) == -1) {
+			fprintf(stderr, "error: radio_source::tune\n");
 			return -1;
 		}
 

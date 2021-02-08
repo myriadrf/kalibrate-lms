@@ -10,68 +10,103 @@ poor data and voice call performance.
 Original version of kalibrate (for use with USRP1):
   * http://ttsou.github.com/kalibrate/kal-v0.4.1.tar.bz2
 
-Universal Hardware Driver (UHD):
-  * http://uhd.ettus.com
+LimeSuite Driver (LimeSuite):
+  * https://github.com/myriadrf/LimeSuite
 
 Release Notes
 
-The USRP2/N200/N210 is clocked at 100MHz and does not output fractional sample rates.
-The hardware sample rate warning can be safely ignored.
-
-For USRP1, the original, non-UHD version of kalibrate is recommended.
+Support for LimeSDR and LimeSDR-Mini.
 
 Build
 =====
 
 ```
-$ ./bootstrap
+$ autoreconf -i
 $ ./configure
 $ make
+$ cd src
 ```
 
 Examples
 ========
 
-USRP2 with internal reference:
+LimeSDR (USB) with internal reference:
 
 ```
-$ ./kal -f 1941.6e6
-linux; GNU C++ version 4.4.4 20100630 (Red Hat 4.4.4-10); Boost_104100; UHD_20101116.195923.c5043c6
+$ ./kal -s GSM900 -A LNAL
+Devices found: 1
+Device info: LimeSDR-USB, media=USB 3.0, module=FX3, addr=1d50:6108, serial=00090726074D2F1B
+Reference clock 30.72 MHz
+Disabling external reference clock
+Sampling Rate Range: Min=100000.000000 Max=61440000.000000 Step=0.000000
+kal: Scanning for GSM-900 base stations.
+        chan: 2 (935.4MHz + 230Hz)      power: 673437.23
 
-Current recv sock buff size: 50000000 bytes
 
-Warning:
-    The hardware does not support the requested RX sample rate:
-    Target sample rate: 0.270833 MSps
-    Actual sample rate: 0.271739 MSps
-
+$ ./kal -f 935.4e6 -A LNAL            
+Devices found: 1
+Device info: LimeSDR-USB, media=USB 3.0, module=FX3, addr=1d50:6108, serial=00090726074D2F1B
+Reference clock 30.72 MHz
+Disabling external reference clock
+Sampling Rate Range: Min=100000.000000 Max=61440000.000000 Step=0.000000
 kal: Calculating clock frequency offset.
-Using PCS-1900 channel 569 (1941.6MHz)
-average         [min, max]      (range, stddev)
-+ 22.221kHz     [21574, 22791]  (1217, 352.328674)
+Using GSM-900 channel 2 (935.4MHz)
+average		[min, max]	(range, stddev)
++ 245Hz		[226, 263]	(37, 8.856748)
 overruns: 0
-not found: 0
+not found: 12
 ```
 
-USRP2 with external 10MHz reference - Agilent E4438C (OCXO):
+LimeSDR (USB) with external 10MHz reference - Leo Bodnar GPS reference clock:
 
 ```
-$ ./kal -f 1941.6e6 -x
-linux; GNU C++ version 4.4.4 20100630 (Red Hat 4.4.4-10); Boost_104100; UHD_20101116.195923.c5043c6
+$ ./kal -s GSM900 -A LNAL -x
+Devices found: 1
+Device info: LimeSDR-USB, media=USB 3.0, module=FX3, addr=1d50:6108, serial=00090726074D2F1B
+Reference clock 30.72 MHz
+Sampling Rate Range: Min=100000.000000 Max=61440000.000000 Step=0.000000
+kal: Scanning for GSM-900 base stations.
+        chan: 1 (935.2MHz + 22.819kHz)  power: 295159.52                      
+        chan: 2 (935.4MHz +  32Hz)      power: 793036.65
 
-Current recv sock buff size: 50000000 bytes
 
-Warning:
-    The hardware does not support the requested RX sample rate:
-    Target sample rate: 0.270833 MSps
-    Actual sample rate: 0.271739 MSps
-
+$ ./kal -f 935.4e6 -A LNAL -x
+Devices found: 1
+Device info: LimeSDR-USB, media=USB 3.0, module=FX3, addr=1d50:6108, serial=00090726074D2F1B
+Reference clock 30.72 MHz
+Sampling Rate Range: Min=100000.000000 Max=61440000.000000 Step=0.000000
 kal: Calculating clock frequency offset.
-Using PCS-1900 channel 569 (1941.6MHz)
-average         [min, max]      (range, stddev)
-+  13Hz         [-32, 86]       (118, 34.811478)
+Using GSM-900 channel 2 (935.4MHz)
+average		[min, max]	(range, stddev)
++  25Hz		[8, 44]	(36, 9.328476)
 overruns: 0
-not found: 0
+not found: 1
+```
+
+LimeSDR-Mini with internal reference:
+
+```
+$ ./kal -s GSM900 -A LNAW
+Devices found: 1
+Device info: LimeSDR Mini, media=USB 3.0, module=FT601, addr=24607:1027, serial=1D588161783274
+Reference clock 40.00 MHz
+Sampling Rate Range: Min=100000.000000 Max=30720000.000000 Step=0.000000
+kal: Scanning for GSM-900 base stations.
+        chan: 2 (935.4MHz - 128Hz)      power: 329156.49                      
+        chan: 92 (953.4MHz - 167Hz)     power: 33095.20
+
+
+$ ./kal -f 935.4e6 -A LNAW
+Devices found: 1
+Device info: LimeSDR Mini, media=USB 3.0, module=FT601, addr=24607:1027, serial=1D588161783274
+Reference clock 40.00 MHz
+Sampling Rate Range: Min=100000.000000 Max=30720000.000000 Step=0.000000
+kal: Calculating clock frequency offset.
+Using GSM-900 channel 2 (935.4MHz)
+average		[min, max]	(range, stddev)
+-  83Hz		[-158, -14]	(144, 37.776100)
+overruns: 0
+not found: 73
 ```
 
 Authors
@@ -80,3 +115,4 @@ Authors
 Kalibrate was originally written by Joshua Lackey <jl@thre.at> in 2010.
 Subsequent UHD device support and other changes were added by
 Tom Tsou <tom@tsou.cc>.
+Subsequent LimeSDR device support and other changes were added by Supreeth Herle <herlesupreeth@gmail.com>

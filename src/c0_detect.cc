@@ -28,8 +28,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
-#include "usrp_source.h"
+#include "lime_source.h"
 #include "circular_buffer.h"
 #include "fcch_detector.h"
 #include "arfcn_freq.h"
@@ -54,7 +55,7 @@ static double vectornorm2(const complex *v, const unsigned int len) {
 }
 
 
-int c0_detect(usrp_source *u, int bi) {
+int c0_detect(lime_source *u, int bi) {
 
 	static const double GSM_RATE = 1625000.0 / 6.0;
 	static const unsigned int NOTFOUND_MAX = 10;
@@ -77,7 +78,7 @@ int c0_detect(usrp_source *u, int bi) {
 	ub = u->get_buffer();
 
 	// first, we calculate the power in each channel
-	if(g_verbosity > 2) {
+	if(g_verbosity > 0) {
 		fprintf(stderr, "calculate power in each channel:\n");
 	}
 	u->start();
@@ -87,15 +88,15 @@ int c0_detect(usrp_source *u, int bi) {
 		printf(STDOUTCLEAN "%3d of %3d, Pass 1 of 2, %2.2f%%\r", j, amount_chan(bi), (float) 100*j/amount_chan(bi));
 		fflush(stdout);
 		freq = arfcn_to_freq(i, &bi);
-		if(!u->tune(freq)) {
-			fprintf(stderr, "error: usrp_source::tune\n");
+		if(u->tune(freq) == -1) {
+			fprintf(stderr, "error: radio_source::tune\n");
 			return -1;
 		}
 
 		do {
 			u->flush();
 			if(u->fill(frames_len, &overruns)) {
-				fprintf(stderr, "error: usrp_source::fill\n");
+				fprintf(stderr, "error: radio_source::fill\n");
 				return -1;
 			}
 		} while(overruns);
@@ -103,7 +104,7 @@ int c0_detect(usrp_source *u, int bi) {
 		b = (complex *)ub->peek(&b_len);
 		n = sqrt(vectornorm2(b, frames_len));
 		power[i] = n;
-		if(g_verbosity > 2) {
+		if(g_verbosity > 0) {
 			fprintf(stderr, "\tchan %d (%.1fMHz):\tpower: %lf\n",
 			   i, freq / 1e6, n);
 		}
@@ -146,15 +147,15 @@ int c0_detect(usrp_source *u, int bi) {
 		}
 
 		freq = arfcn_to_freq(i, &bi);
-		if(!u->tune(freq)) {
-			fprintf(stderr, "error: usrp_source::tune\n");
+		if(u->tune(freq) == -1) {
+			fprintf(stderr, "error: radio_source::tune\n");
 			return -1;
 		}
 
 		do {
 			u->flush();
 			if(u->fill(frames_len, &overruns)) {
-				fprintf(stderr, "error: usrp_source::fill\n");
+				fprintf(stderr, "error: radio_source::fill\n");
 				return -1;
 			}
 		} while(overruns);
@@ -181,6 +182,9 @@ int c0_detect(usrp_source *u, int bi) {
 		}
 
 	} while(i > 0);
+
+	delete l;
+	delete u;
 
 	return 0;
 }

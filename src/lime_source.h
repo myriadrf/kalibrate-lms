@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, Joshua Lackey
+ * Copyright (c) 2021, Supreeth Herle
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -27,19 +27,19 @@
 
 #include "config.h"
 
-#include <uhd/usrp/multi_usrp.hpp>
+#include <lime/LimeSuite.h>
 
-#include "usrp_complex.h"
+#include "complex.h"
 #include "circular_buffer.h"
 
 
-class usrp_source {
+class lime_source {
 public:
-	usrp_source(double sample_rate,
-		    double fpga_master_clock_freq = 0.0,
-		    bool external_ref = false);
+	lime_source(double sample_rate,
+			double fpga_master_clock_freq = 0.0,
+			bool external_ref = false);
 
-	~usrp_source();
+	~lime_source();
 
 	int open(char *subdev);
 	int read(complex *buf,
@@ -48,38 +48,35 @@ public:
 
 	int fill(unsigned int num_samples, unsigned int *overrun);
 	int tune(double freq);
-	void set_antenna(int antenna);
 	void set_antenna(const std::string antenna);
-	std::vector<std::string> get_antennas();
-	bool set_gain(float gain);
+	bool set_gain(double gain);
 	void start();
 	void stop();
+	double maxRxGain();
+	double minRxGain();
 	int flush(unsigned int flush_count = FLUSH_COUNT);
 	circular_buffer *get_buffer();
 
 	double sample_rate();
 
 private:
-	uhd::usrp::multi_usrp::sptr	m_dev;
-	uhd::rx_streamer::sptr		m_rx_stream;
+	lms_device_t        *m_dev;
+	lms_stream_t		m_rx_stream;
 
 	double				m_sample_rate;
 	double				m_desired_sample_rate;
 	bool				m_external_ref;
-	unsigned int			m_recv_samples_per_packet;
+	unsigned int        m_recv_samples_per_packet;
 	double				m_fpga_master_clock_freq;
 
-	circular_buffer *		m_cb;
+	circular_buffer		*m_cb;
 
 	/*
-	 * This mutex protects access to the USRP and daughterboards but not
-	 * necessarily to any fields in this class.
+	 * This mutex protects access to the lime
 	 */
-	pthread_mutex_t			m_u_mutex;
+	pthread_mutex_t		m_u_mutex;
 
 	static const unsigned int	FLUSH_COUNT	= 10;
 	static const unsigned int	CB_LEN		= (1 << 20);
-	static const int		NCHAN		= 1;
-
-	bool check_rx_err(uhd::rx_metadata_t *md);
+	static const int			NCHAN		= 1;
 };

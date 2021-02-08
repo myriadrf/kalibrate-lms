@@ -25,9 +25,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "usrp_source.h"
+#include "lime_source.h"
 #include "fcch_detector.h"
 #include "util.h"
+#include <unistd.h>
 
 
 static const unsigned int	AVG_COUNT	= 100;
@@ -37,7 +38,7 @@ static const float		OFFSET_MAX	= 40e3;
 extern int g_verbosity;
 
 
-int offset_detect(usrp_source *u) {
+int offset_detect(lime_source *u) {
 
 	static const double GSM_RATE = 1625000.0 / 6.0;
 
@@ -65,7 +66,7 @@ int offset_detect(usrp_source *u) {
 	count = 0;
 	while(count < AVG_COUNT) {
 
-		// ensure at least s_len contiguous samples are read from usrp
+		// ensure at least s_len contiguous samples are read from lime
 		do {
 			if(u->fill(s_len, &new_overruns)) {
 				return -1;
@@ -103,8 +104,9 @@ int offset_detect(usrp_source *u) {
 		cb->purge(consumed);
 	}
 
-	u->stop();
+
 	delete l;
+	delete u;
 
 	// construct stats
 	sort(offsets, AVG_COUNT);
