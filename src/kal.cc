@@ -82,7 +82,7 @@ void usage(char *prog) {
 	printf("\t-b\tband indicator (GSM850, GSM900, EGSM, DCS, PCS)\n");
 	printf("\t-R\tRX subdev spec (Not Supported)\n");
 	printf("\t-A\tantenna LNAH or LNAL or LNAW, defaults to LNAH\n");
-	printf("\t-g\tgain, defaults to 36.5\n");
+	printf("\t-g\tgain (0.0 - 73.0), defaults to 36.5\n");
 	printf("\t-x\tenable external 10MHz reference input\n");
 	printf("\t-v\tverbose\n");
 	printf("\t-D\tenable debug messages\n");
