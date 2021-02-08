@@ -7,9 +7,6 @@ networks. Out-of-specification clock accuracy causes a number of network issues
 such as inconsistent network detection by the handset, handover failure, and
 poor data and voice call performance.
 
-Original version of kalibrate (for use with USRP1):
-  * http://ttsou.github.com/kalibrate/kal-v0.4.1.tar.bz2
-
 LimeSuite Driver (LimeSuite):
   * https://github.com/myriadrf/LimeSuite
 
