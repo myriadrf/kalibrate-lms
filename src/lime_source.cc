@@ -194,9 +194,21 @@ int lime_source::open(char *subdev) {
 	}
 
 	// LimeSDR Mini does not support setting reference clock
-	if (!strstr(info_list[0], "LimeSDR Mini") && LMS_SetClockFreq(m_dev, LMS_CLOCK_EXTREF, m_external_ref) != 0) {
-		fprintf(stderr, "LMS_SetClockFreq: failed to set external clock frequency\n");
-		return -1;
+	// Buggy: Setting of External clock gets stuck, so reset it first and then apply clock freq
+	if (!strstr(info_list[0], "LimeSDR Mini")) {
+		// Reset clock
+		if (LMS_SetClockFreq(m_dev, LMS_CLOCK_EXTREF, -1.0) != 0) {
+			fprintf(stderr, "LMS_SetClockFreq: failed to reset external clock frequency\n");
+			return -1;
+		}
+		// Set external clock
+		if (m_external_ref != -1.0) {
+			fprintf(stderr, "Setting external reference clock to %f frequency\n", m_external_ref);
+			if (LMS_SetClockFreq(m_dev, LMS_CLOCK_EXTREF, m_external_ref) != 0) {
+				fprintf(stderr, "LMS_SetClockFreq: failed to set external clock frequency\n");
+				return -1;
+			}
+		}
 	}
 
 	//Enable RX channel
