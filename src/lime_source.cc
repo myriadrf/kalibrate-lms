@@ -43,7 +43,7 @@ extern int g_verbosity;
 
 lime_source::lime_source(double sample_rate,
 			 double fpga_master_clock_freq,
-			 bool external_ref) {
+			 double external_ref) {
 
 	m_desired_sample_rate = sample_rate;
 	m_fpga_master_clock_freq = fpga_master_clock_freq;
@@ -169,7 +169,6 @@ int lime_source::open(char *subdev) {
 	//should be large enough to hold all detected devices
 	lms_info_str_t info_list[8];
 	lms_range_t range_sr;
-	double ref_freq = 0.0;
 
 	if ((n = LMS_GetDeviceList(info_list)) < 0)
 		fprintf(stderr, "LMS_GetDeviceList(NULL) failed\n");
@@ -194,15 +193,8 @@ int lime_source::open(char *subdev) {
 		return -1;
 	}
 
-	// External reference clock is set to 10Mhz
-	if (m_external_ref) {
-		ref_freq = 10e6;
-	} else {
-		ref_freq = -1;
-	}
-
 	// LimeSDR Mini does not support setting reference clock
-	if (!strstr(info_list[0], "LimeSDR Mini") && LMS_SetClockFreq(m_dev, LMS_CLOCK_EXTREF, ref_freq) != 0) {
+	if (!strstr(info_list[0], "LimeSDR Mini") && LMS_SetClockFreq(m_dev, LMS_CLOCK_EXTREF, m_external_ref) != 0) {
 		fprintf(stderr, "LMS_SetClockFreq: failed to set external clock frequency\n");
 		return -1;
 	}

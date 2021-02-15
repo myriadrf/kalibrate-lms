@@ -40,7 +40,7 @@ kal: Scanning for GSM-900 base stations.
         chan: 2 (935.4MHz + 230Hz)      power: 673437.23
 
 
-$ ./kal -f 935.4e6 -A LNAL            
+$ ./kal -f 935.4e6 -A LNAL
 Devices found: 1
 Device info: LimeSDR-USB, media=USB 3.0, module=FX3, addr=1d50:6108, serial=00090726074D2F1B
 Reference clock 30.72 MHz
@@ -57,7 +57,7 @@ not found: 12
 LimeSDR (USB) with external 10MHz reference - Leo Bodnar GPS reference clock:
 
 ```
-$ ./kal -s GSM900 -A LNAL -x
+$ ./kal -s GSM900 -A LNAL -x 10.0e6
 Devices found: 1
 Device info: LimeSDR-USB, media=USB 3.0, module=FX3, addr=1d50:6108, serial=00090726074D2F1B
 Reference clock 30.72 MHz
@@ -67,7 +67,7 @@ kal: Scanning for GSM-900 base stations.
         chan: 2 (935.4MHz +  32Hz)      power: 793036.65
 
 
-$ ./kal -f 935.4e6 -A LNAL -x
+$ ./kal -f 935.4e6 -A LNAL -x 10.0e6
 Devices found: 1
 Device info: LimeSDR-USB, media=USB 3.0, module=FX3, addr=1d50:6108, serial=00090726074D2F1B
 Reference clock 30.72 MHz

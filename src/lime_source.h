@@ -37,7 +37,7 @@ class lime_source {
 public:
 	lime_source(double sample_rate,
 			double fpga_master_clock_freq = 0.0,
-			bool external_ref = false);
+			double external_ref = -1.0);
 
 	~lime_source();
 
@@ -65,7 +65,7 @@ private:
 
 	double				m_sample_rate;
 	double				m_desired_sample_rate;
-	bool				m_external_ref;
+	double				m_external_ref;
 	unsigned int        m_recv_samples_per_packet;
 	double				m_fpga_master_clock_freq;
 

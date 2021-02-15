@@ -83,7 +83,7 @@ void usage(char *prog) {
 	printf("\t-R\tRX subdev spec (Not Supported)\n");
 	printf("\t-A\tantenna LNAH or LNAL or LNAW, defaults to LNAH\n");
 	printf("\t-g\tgain (0.0 - 73.0), defaults to 36.5\n");
-	printf("\t-x\tenable external 10MHz reference input\n");
+	printf("\t-x\texternal reference input in Hz\n");
 	printf("\t-v\tverbose\n");
 	printf("\t-D\tenable debug messages\n");
 	printf("\t-h\thelp\n");
@@ -98,12 +98,12 @@ int main(int argc, char **argv) {
 	char *antenna_args = NULL;
 	char *subdev = NULL;
 	double fpga_master_clock_freq = 30.72e6;
-	bool external_ref = false;
+	double external_ref = -1.0;
 	float gain = 36.5;
 	double freq = -1.0, fd;
 	lime_source *u;
 
-	while((c = getopt(argc, argv, "f:c:s:b:R:A:g:F:xvDh?")) != EOF) {
+	while((c = getopt(argc, argv, "f:c:s:b:R:A:g:F:x:vDh?")) != EOF) {
 		switch(c) {
 			case 'f':
 				freq = strtod(optarg, 0);
@@ -153,11 +153,11 @@ int main(int argc, char **argv) {
 				break;
 
 			case 'F':
-				fpga_master_clock_freq = atof(optarg);
+				fpga_master_clock_freq = strtod(optarg, 0);
 				break;
 
 			case 'x':
-				external_ref = true;
+				external_ref = strtod(optarg, 0);
 				break;
 
 			case 'v':
@@ -204,7 +204,7 @@ int main(int argc, char **argv) {
 		printf("debug: Mac OS X version\n");
 #endif
 		printf("debug: FPGA Master Clock Freq:\t%f\n", fpga_master_clock_freq);
-		printf("debug: External Reference    :\t%s\n", external_ref? "Yes" : "No");
+		printf("debug: External Reference    :\t%s\n", external_ref != -1.0 ? "Yes" : "No");
 		printf("debug: RX Subdev Spec        :\t%s\n", subdev? subdev : "");
 		printf("debug: Antenna               :\t%s\n", antenna_args? antenna_args : "LNAH");
 		printf("debug: Gain                  :\t%f\n", gain);
