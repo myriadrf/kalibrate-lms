@@ -255,7 +255,7 @@ int main(int argc, char **argv) {
 					lowest = off;
 				}
 				if (fabs(off) < 50) {
-					fprintf(stderr, "Test DAC trim value in range [%d-%d]\n", dac-6, dac+6);
+					fprintf(stderr, "\nTest DAC trim value in range [%d-%d]\n", dac-6, dac+6);
 					for (int i = -6; i < 6; i++) {
 						fprintf(stderr, "================================================\n");
 						u->tune_dac(dac + i);
