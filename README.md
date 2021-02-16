@@ -57,6 +57,7 @@ average		[min, max]	(range, stddev)
 -  25Hz		[-66, 14]	(80, 21.595409)
 overruns: 0
 not found: 0
+
 Test DAC trim value in range [121-133]
 ================================================
 VCTCXO DAC value set to: 121.000000
@@ -167,27 +168,110 @@ not found: 1
 LimeSDR-Mini with internal reference:
 
 ```
-$ ./kal -s GSM900 -A LNAW
+$ ./kal -s GSM900 -A LNAW -g 45
 Devices found: 1
 Device info: LimeSDR Mini, media=USB 3.0, module=FT601, addr=24607:1027, serial=1D588161783274
 Reference clock 40.00 MHz
 Sampling Rate Range: Min=100000.000000 Max=30720000.000000 Step=0.000000
+Sample rate: 270833.330495
 kal: Scanning for GSM-900 base stations.
-        chan: 2 (935.4MHz - 128Hz)      power: 329156.49                      
-        chan: 92 (953.4MHz - 167Hz)     power: 33095.20
+        chan: 3 (935.6MHz -   10Hz)     power: 230188.16
+        chan: 4 (935.8MHz + 128Hz)      power: 128849.91
+        chan: 86 (952.2MHz +  51Hz)     power: 108510.78
+        chan: 112 (957.4MHz + 22.956kHz)        power: 89879.75
+        chan: 119 (958.8MHz + 31.935kHz)        power: 87845.77
 
 
-$ ./kal -f 935.4e6 -A LNAW
+$ ./kal -f 935.8e6 -A LNAW -g 45
 Devices found: 1
 Device info: LimeSDR Mini, media=USB 3.0, module=FT601, addr=24607:1027, serial=1D588161783274
 Reference clock 40.00 MHz
 Sampling Rate Range: Min=100000.000000 Max=30720000.000000 Step=0.000000
+Sample rate: 270833.330495
 kal: Calculating clock frequency offset.
-Using GSM-900 channel 2 (935.4MHz)
+Using GSM-900 channel 4 (935.8MHz)
+================================================
+VCTCXO DAC value set to: 178.000000
 average		[min, max]	(range, stddev)
--  83Hz		[-158, -14]	(144, 37.776100)
+-  32Hz		[-108, 40]	(148, 38.195812)
 overruns: 0
-not found: 73
+not found: 24
+
+Test DAC trim value in range [172-184]
+================================================
+VCTCXO DAC value set to: 172.000000
+average		[min, max]	(range, stddev)
++ 473Hz		[391, 545]	(154, 41.568333)
+overruns: 0
+not found: 9
+================================================
+VCTCXO DAC value set to: 173.000000
+average		[min, max]	(range, stddev)
++ 385Hz		[314, 456]	(143, 37.254765)
+overruns: 0
+not found: 21
+================================================
+VCTCXO DAC value set to: 174.000000
+average		[min, max]	(range, stddev)
++ 300Hz		[222, 372]	(151, 35.989777)
+overruns: 0
+not found: 7
+================================================
+VCTCXO DAC value set to: 175.000000
+average		[min, max]	(range, stddev)
++ 221Hz		[146, 279]	(133, 38.328632)
+overruns: 0
+not found: 6
+================================================
+VCTCXO DAC value set to: 176.000000
+average		[min, max]	(range, stddev)
++ 128Hz		[57, 184]	(127, 36.148319)
+overruns: 0
+not found: 9
+================================================
+VCTCXO DAC value set to: 177.000000
+average		[min, max]	(range, stddev)
++  36Hz		[-28, 102]	(130, 36.664257)
+overruns: 0
+not found: 14
+================================================
+VCTCXO DAC value set to: 178.000000
+average		[min, max]	(range, stddev)
+-  48Hz		[-109, 19]	(128, 31.921885)
+overruns: 0
+not found: 13
+================================================
+VCTCXO DAC value set to: 179.000000
+average		[min, max]	(range, stddev)
+- 131Hz		[-198, -65]	(133, 36.958584)
+overruns: 0
+not found: 15
+================================================
+VCTCXO DAC value set to: 180.000000
+average		[min, max]	(range, stddev)
+- 203Hz		[-274, -109]	(165, 40.602825)
+overruns: 0
+not found: 65
+================================================
+VCTCXO DAC value set to: 181.000000
+average		[min, max]	(range, stddev)
+- 295Hz		[-377, -224]	(153, 39.257061)
+overruns: 0
+not found: 36
+================================================
+VCTCXO DAC value set to: 182.000000
+average		[min, max]	(range, stddev)
+- 389Hz		[-476, -311]	(164, 42.100746)
+overruns: 0
+not found: 49
+================================================
+VCTCXO DAC value set to: 183.000000
+average		[min, max]	(range, stddev)
+- 482Hz		[-573, -375]	(198, 54.824726)
+overruns: 0
+not found: 134
+Found lowest offset of -31.985970Hz at 935.800000MHz (-0.034180 ppm) using DAC trim 178
+VCTCXO DAC value set to: 178.000000
 ```
 
 Authors
