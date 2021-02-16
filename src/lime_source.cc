@@ -57,10 +57,26 @@ lime_source::lime_source(double sample_rate,
 
 lime_source::~lime_source() {
 
-	stop();
 	delete m_cb;
 	LMS_Close(m_dev);
 	pthread_mutex_destroy(&m_u_mutex);
+}
+
+void lime_source::tune_dac(uint16_t dacVal) {
+
+	if (LMS_VCTCXOWrite(m_dev, dacVal) != 0) {
+		fprintf(stderr, "Failed to set runtime VCTCXO DAC trim value\n");
+	}
+	fprintf(stderr, "VCTCXO DAC value set to: %f\n", get_board_dac());
+}
+
+double lime_source::get_board_dac() {
+
+	double dac_value = 0.0;
+	if (LMS_ReadCustomBoardParam(m_dev, BOARD_PARAM_DAC, &dac_value, NULL) != 0) {
+		fprintf(stderr, "Failed to read runtime VCTCXO DAC trim value\n");
+	}
+	return dac_value;
 }
 
 
@@ -201,6 +217,7 @@ int lime_source::open(char *subdev) {
 			fprintf(stderr, "LMS_SetClockFreq: failed to reset external clock frequency\n");
 			return -1;
 		}
+
 		// Set external clock
 		if (m_external_ref != -1.0) {
 			fprintf(stderr, "Setting external reference clock to %f frequency\n", m_external_ref);
@@ -235,9 +252,7 @@ int lime_source::open(char *subdev) {
 		return -1;
 	}
 
-	if(g_verbosity > 0) {
-		fprintf(stderr, "Sample rate: %f\n", m_sample_rate);
-	}
+	fprintf(stderr, "Sample rate: %f\n", m_sample_rate);
 
 	set_antenna("LNAH");
 

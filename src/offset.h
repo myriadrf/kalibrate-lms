@@ -25,4 +25,4 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-int offset_detect(lime_source *u);
+int offset_detect(lime_source *u, float *off);

@@ -55,6 +55,8 @@ public:
 	double maxRxGain();
 	double minRxGain();
 	int flush(unsigned int flush_count = FLUSH_COUNT);
+	void tune_dac(uint16_t dacVal);
+	double get_board_dac();
 	circular_buffer *get_buffer();
 
 	double sample_rate();

@@ -183,8 +183,8 @@ int c0_detect(lime_source *u, int bi) {
 
 	} while(i > 0);
 
+	u->stop();
 	delete l;
-	delete u;
 
 	return 0;
 }

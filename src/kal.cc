@@ -239,11 +239,61 @@ int main(int argc, char **argv) {
 		fprintf(stderr, "Using %s channel %d (%.1fMHz)\n",
 		   bi_to_str(bi), chan, freq / 1e6);
 
-		return offset_detect(u);
+		if (external_ref == -1.0) {
+			float off;
+			uint16_t dac = (uint16_t) u->get_board_dac();
+			uint16_t delta = 1;
+			int max = 50;
+			float lowest = 100e6;
+			uint16_t dac_l = 0;
+			do {
+				fprintf(stderr, "================================================\n");
+				u->tune_dac(dac);
+				offset_detect(u, &off);
+				if (fabs(off) < fabs(lowest)) {
+					dac_l = dac;
+					lowest = off;
+				}
+				if (fabs(off) < 50) {
+					fprintf(stderr, "Test DAC trim value in range [%d-%d]\n", dac-6, dac+6);
+					for (int i = -6; i < 6; i++) {
+						fprintf(stderr, "================================================\n");
+						u->tune_dac(dac + i);
+						offset_detect(u, &off);
+						if (fabs(off) < fabs(lowest)) {
+							dac_l = dac + i;
+							lowest = off;
+						}
+					}
+					break;
+				}
+
+				if (off < 0)
+					dac -= delta;
+				if (off > 0)
+					dac += delta;
+				if (off == 0)
+					break;
+
+				if (max-- < 0) break;
+			} while (true);
+			fprintf(stderr, "Found lowest offset of %fHz at %fMHz (%f ppm) using DAC trim %u\n", lowest, freq/1e6, lowest/freq*1e6, dac_l);
+			u->tune_dac(dac_l);
+		} else {
+			offset_detect(u, NULL);
+		}
+
+		delete u;
+
+		return 0;
 	}
 
 	fprintf(stderr, "%s: Scanning for %s base stations.\n",
 	   basename(argv[0]), bi_to_str(bi));
 
-	return c0_detect(u, bi);
+	c0_detect(u, bi);
+
+	delete u;
+
+	return 0;
 }

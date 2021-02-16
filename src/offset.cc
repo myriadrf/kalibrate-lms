@@ -38,7 +38,7 @@ static const float		OFFSET_MAX	= 40e3;
 extern int g_verbosity;
 
 
-int offset_detect(lime_source *u) {
+int offset_detect(lime_source *u, float *off) {
 
 	static const double GSM_RATE = 1625000.0 / 6.0;
 
@@ -104,9 +104,8 @@ int offset_detect(lime_source *u) {
 		cb->purge(consumed);
 	}
 
-
+	u->stop();
 	delete l;
-	delete u;
 
 	// construct stats
 	sort(offsets, AVG_COUNT);
@@ -116,6 +115,7 @@ int offset_detect(lime_source *u) {
 
 	printf("average\t\t[min, max]\t(range, stddev)\n");
 	display_freq(avg_offset);
+	if (off) *off = avg_offset;
 	printf("\t\t[%d, %d]\t(%d, %f)\n", (int)round(min), (int)round(max), (int)round(max - min), stddev);
 	printf("overruns: %u\n", overruns);
 	printf("not found: %u\n", notfound);
