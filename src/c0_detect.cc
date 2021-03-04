@@ -58,7 +58,7 @@ static double vectornorm2(const complex *v, const unsigned int len) {
 int c0_detect(lime_source *u, int bi) {
 
 	static const double GSM_RATE = 1625000.0 / 6.0;
-	static const unsigned int NOTFOUND_MAX = 10;
+	static const unsigned int NOTFOUND_MAX = 20;
 
 	int i, chan_count, j;
 	unsigned int overruns, b_len, frames_len, found_count, notfound_count, r;
@@ -84,7 +84,7 @@ int c0_detect(lime_source *u, int bi) {
 	u->start();
 	u->flush();
 	j = 0;
-	for(i = first_chan(bi); i > 0; i = next_chan(i, bi)) {
+	for(i = first_chan(bi); i >= 0; i = next_chan(i, bi)) {
 		printf(STDOUTCLEAN "%3d of %3d, Pass 1 of 2, %2.2f%%\r", j, amount_chan(bi), (float) 100*j/amount_chan(bi));
 		fflush(stdout);
 		freq = arfcn_to_freq(i, &bi);
@@ -119,7 +119,7 @@ int c0_detect(lime_source *u, int bi) {
 	 * channels when we construct the average.
 	 */
 	chan_count = 0;
-	for(i = first_chan(bi); i > 0; i = next_chan(i, bi)) {
+	for(i = first_chan(bi); i >= 0; i = next_chan(i, bi)) {
 		spower[chan_count++] = power[i];
 	}
 	sort(spower, chan_count);
@@ -181,7 +181,7 @@ int c0_detect(lime_source *u, int bi) {
 			}
 		}
 
-	} while(i > 0);
+	} while(i >= 0);
 
 	u->stop();
 	delete l;
