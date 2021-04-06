@@ -18,7 +18,8 @@ Build
 =====
 
 ```
-$ autoreconf -i
+$ apt-get install pkg-config autoconf libfftw3-dev g++ make
+$ ./bootstrap
 $ ./configure
 $ make
 $ cd src

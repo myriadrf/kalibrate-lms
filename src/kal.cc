@@ -51,6 +51,7 @@
 #include <string.h>
 #include <sys/time.h>
 #include <errno.h>
+#include <libgen.h>
 
 #include "lime_source.h"
 #include "fcch_detector.h"
