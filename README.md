@@ -21,6 +21,7 @@ Build
 $ apt-get install pkg-config autoconf libfftw3-dev g++ make
 $ ./bootstrap
 $ ./configure
+$ mkdir /dev/shm
 $ make
 $ cd src
 ```
